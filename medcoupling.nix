@@ -1,0 +1,96 @@
+{ lib
+, stdenv
+, libtirpc
+, swig
+, cppunit
+, libxml2
+, metis
+, scotch
+, parmetis
+, boost
+, python311
+, graphviz
+, cmake
+, pkg-config
+, hdf5-mpi
+, mpi
+, medfile
+, salome-configuration
+}:
+stdenv.mkDerivation {
+  pname = "medcoupling";
+  version = "9_13_0";
+
+  CONFIGURATION_ROOT_DIR = salome-configuration;
+
+  src = builtins.fetchGit {
+    url = "http://git.salome-platform.org/gitpub/tools/medcoupling.git";
+    #rev = "28e485bde1c26dc835ec7acf449b1d519997ddce"; # V9_12_0
+    rev = "8bea530c92cd907ae859ef11fd95b2db54b2894a"; # V9_13_0
+  };
+
+  prePatch = ''
+    for i in $(grep -rl 'ParMETIS_')
+    do
+      substituteInPlace $i \
+        --replace-fail 'ParMETIS_' 'ParMETIS_V3_'
+    done
+  '';
+
+#  env.NIX_CFLAGS_COMPILE = "-std=c++11 -DMED_INT_IS_LONG";
+
+  cmakeFlags = [
+    "-DSALOME_USE_MPI=ON"
+    "-DMEDCOUPLING_USE_MPI=ON"
+    "-DCMAKE_Fortran_COMPILER=mpif77"
+
+#    "-DMEDCOUPLING_MICROMED=ON"
+#    "-DMEDCOUPLING_ENABLE_PYTHON=ON"
+
+    "-DMEDCOUPLING_BUILD_DOC=OFF"
+
+    "-DMEDCOUPLING_ENABLE_PARTITIONER=OFF" # Need to make a choice of scotch or ptscotch
+    "-DMEDCOUPLING_PARTITIONER_SCOTCH=OFF"
+    "-DMEDCOUPLING_PARTITIONER_PTSCOTCH=OFF"
+    "-DMEDCOUPLING_PARTITIONER_PARMETIS=OFF"
+
+    "-DLIBXML2_LIBRARY=${libxml2}"
+    "-DMEDCOUPLING_USE_64BIT_IDS=1"
+    "-Wno-dev"
+  ];
+
+
+  nativeBuildInputs = [
+    swig
+    cmake
+    pkg-config
+  ];
+
+  buildInputs = [
+    hdf5-mpi
+    parmetis
+    mpi
+#    parmetis
+    scotch
+    libtirpc
+    medfile
+    cppunit
+    libxml2
+    metis
+#    scotch
+    boost
+#    sphinx
+#    doxygen
+    graphviz
+    (python311.withPackages (p: with p; [ numpy scipy ]))
+  ];
+
+  meta = with lib; {
+    description = "";
+    homepage = "http://git.salome-platform.org/gitpub/tools/medcoupling.git";
+    license = licenses.lgpl21Only;
+    maintainers = with maintainers; [ matthewcroughan ];
+    mainProgram = "medcoupling";
+    platforms = platforms.all;
+  };
+}
