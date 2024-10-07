@@ -11,6 +11,7 @@
 , zlib
 , openblas
 , medfile
+, lapack-ilp64
 , scalapack
 , hdf5-mpi
 , python311
@@ -82,7 +83,8 @@ in
 #    }))
     zlib
     openblas
-    scalapack
+    lapack-ilp64
+#    scalapack
     metis
     parmetis
 #    medcouplingPython

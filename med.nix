@@ -6,8 +6,6 @@
 , fetchgit
 , cmake
 , libtirpc
-, omniorbpy
-, omniorb
 , python311
 , cppunit
 , pkg-config
@@ -66,8 +64,8 @@ stdenv.mkDerivation rec {
     hdf5-mpi
     libtirpc
     cppunit
-    omniorb
-    omniorbpy
+    python311.pkgs.omniorb
+    python311.pkgs.omniorbpy
     medfile
   ];
 

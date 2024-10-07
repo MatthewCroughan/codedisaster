@@ -24,11 +24,16 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-XXkVwTr8cbYfzXWWkPERTmjfE86JHUUuU6yxjp9k6II=";
   };
 
-#  env.NIX_CFLAGS_COMPILE = "-DINTSIZE64";
+  outputs = [
+    "bin"
+    "dev"
+    "out"
+  ];
 
-#  prePatch = ''
-#    substituteInPlace ci/Makefile.inc --replace-fail '-Wall' '-Wall -DINTSIZE64'
-#  '';
+  cmakeFlags = [
+    "-DINTSIZE=64"
+    "-DINSTALL_METIS_HEADERS=OFF"
+  ];
 
   nativeBuildInputs = [
     cmake
@@ -42,11 +47,6 @@ stdenv.mkDerivation (finalAttrs: {
     flex
     xz
     zlib
-  ];
-
-  cmakeFlags = [
-    "-DINTSIZE=64"
-    "-DINSTALL_METIS_HEADERS=OFF"
   ];
 
   meta = {

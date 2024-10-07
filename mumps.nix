@@ -1,5 +1,5 @@
 {
-  blas,
+  openblas,
   fetchzip,
   fetchpatch,
   gfortran,
@@ -67,7 +67,7 @@ stdenv.mkDerivation (finalAttrs: {
   nativeBuildInputs = [ gfortran ];
 
   buildInputs = [
-    blas
+    openblas
     lapack
     metis
     scotch

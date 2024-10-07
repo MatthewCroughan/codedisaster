@@ -3,15 +3,16 @@
     "codeaster-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1724777303,
-        "narHash": "sha256-ByRka9tZ2rYKIahNrcMcKBDev2KDGGhg0/caS3OBsno=",
+        "lastModified": 1727950566,
+        "narHash": "sha256-x/H3yuJO9Kp4NeySKQwIlZN3RqZdEOA7EastSYqnHdc=",
         "owner": "codeaster",
         "repo": "src",
-        "rev": "cea3a4b2b08914e9a39b97bd032992cfd1cbf821",
+        "rev": "54ddbe09d4dafeb035a5a628efd3fbd4f039679e",
         "type": "gitlab"
       },
       "original": {
         "owner": "codeaster",
+        "ref": "17.1.9",
         "repo": "src",
         "type": "gitlab"
       }
@@ -36,16 +37,17 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1724852892,
-        "narHash": "sha256-Y7RdWyboS96DrFAnHGZrgtdAhQFqdaJ6GUPNKmKpOsc=",
+        "lastModified": 1727802920,
+        "narHash": "sha256-HP89HZOT0ReIbI7IJZJQoJgxvB2Tn28V6XS3MNKnfLs=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "4b879afe00c9f252bff01546f4588ab59dd3bca0",
+        "rev": "27e30d177e57d912d614c88c622dcfdb2e6e6515",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
         "repo": "nixpkgs",
+        "rev": "27e30d177e57d912d614c88c622dcfdb2e6e6515",
         "type": "github"
       }
     },

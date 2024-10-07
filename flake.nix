@@ -2,10 +2,10 @@
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
     #nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:NixOS/nixpkgs";
+    nixpkgs.url = "github:NixOS/nixpkgs/27e30d177e57d912d614c88c622dcfdb2e6e6515";
     #nixpkgs2405.url = "github:NixOS/nixpkgs/nixos-24.05";
     codeaster-src = {
-      url = "gitlab:codeaster/src";
+      url = "gitlab:codeaster/src/17.1.9";
       flake = false;
     };
   };
@@ -22,8 +22,9 @@
             (self: super: {
               salome-configuration = import ./salome-configuration.nix;
               salome-kernel = self.callPackage ./salome-kernel.nix {};
-              omniorb = super.omniorb.override { python3 = self.python311; };
-              omniorbpy = super.omniorbpy.override { python3 = self.python311; };
+              blas = super.blas.override {
+                blasProvider = self.openblas;
+              };
 #              metis = super.metis.overrideAttrs (old: {
 #                prePatch = ''
 #                  substituteInPlace include/metis.h --replace-fail 'IDXTYPEWIDTH 32' 'IDXTYPEWIDTH 64'
@@ -78,14 +79,27 @@
           ];
           inherit system;
         };
-        packages.default = pkgs.callPackage ./default.nix { codeaster-src = inputs.codeaster-src; };
-        packages.scotch = pkgs.scotch;
-        packages.metis = pkgs.metis;
-        packages.med = pkgs.med;
-        packages.hpddm = pkgs.hpddm;
-        packages.mumps = pkgs.mumps;
-        packages.medcoupling = pkgs.medcoupling;
-        packages.parmetis = pkgs.parmetis;
+        packages = rec {
+          default = pkgs.callPackage ./default.nix { codeaster-src = inputs.codeaster-src; };
+          scotch = pkgs.scotch;
+          metis = pkgs.metis;
+          med = pkgs.med;
+          petsc = pkgs.petsc;
+          hpddm = pkgs.hpddm;
+          mumps = pkgs.mumps;
+          medcoupling = pkgs.medcoupling;
+          parmetis = pkgs.parmetis;
+          test = pkgs.runCommand "" { buildInputs = [ default ]; } ''
+            export HOME=$TMP
+            export PYTHONPATH=${medcoupling}/lib/python3.11/site-packages:${med}/lib/python3.11/site-packages:${petsc}/lib
+            cp -r --no-preserve=mode ${./test} ./test
+            cd test
+           # substituteInPlace test.export --replace-fail '/home/tim/aster/bin/case' "$(pwd)"
+           # substituteInPlace test.export --replace-fail '/home/tim/aster' "$(pwd)"
+           run_aster test.export || true
+           ls -lah
+          '';
+        };
       };
       flake = {
       };

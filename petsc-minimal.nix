@@ -5,7 +5,7 @@
   cctools,
   gfortran,
   python311,
-  blas,
+  openblas,
   lapack,
   mpiSupport ? true,
   mpi, # generic mpi dependency
@@ -21,7 +21,7 @@
   petsc-optimized ? false,
   petsc-scalar-type ? "real",
   petsc-precision ? "double",
-  scalapack,
+#  scalapack,
 #  hpddm,
   fetchFromGitHub
 }:
@@ -54,7 +54,7 @@ stdenv.mkDerivation rec {
     pkg-config
   ] ++ lib.optional mpiSupport mpi ++ lib.optional (mpiSupport && mpi.pname == "openmpi") openssh;
   buildInputs = [
-    blas
+    openblas
     lapack
   ] ++ lib.optional hdf5-support hdf5 ++ lib.optional withp4est p4est;
 
@@ -88,8 +88,6 @@ stdenv.mkDerivation rec {
             "--with-metis-dir=${metis}"
             "--with-parmetis=1"
             "--with-parmetis-dir=${parmetis}"
-            "--with-scalapack"
-            "--with-scalapack-dir=${scalapack}"
             "--with-petsc4py"
             "--with-64-bit-indices"
 
