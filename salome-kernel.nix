@@ -3,8 +3,6 @@
 , cppunit
 , mpi
 , pkg-config
-, omniorb
-, omniorbpy
 , fetchgit
 , cmake
 , python311
@@ -69,9 +67,9 @@ stdenv.mkDerivation rec {
     mpi
     boost
     hdf5
-    omniorb
+    python311.pkgs.omniorb
+    python311.pkgs.omniorbpy
     libxml2
-    omniorbpy
   ];
 
   meta = with lib; {
