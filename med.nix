@@ -1,11 +1,8 @@
 { lib
 , stdenv
 , mpi
-, omniorb
-, omniorbpy
 , gfortran
 , medcoupling
-, fetchgit
 , cmake
 , libtirpc
 , python311
@@ -17,20 +14,17 @@
 , salome-kernel
 , salome-configuration
 }:
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   pname = "med";
   version = "9_11_0";
 
   cmakeFlags = [
     "-Wno-dev"
-
     "-DSALOME_FIELDS_ENABLE_PYTHON=ON"
     "-DSALOME_USE_MPI=ON"
     "-DMED_ENABLE_PYTHON=ON"
-
     "-DSALOME_BUILD_GUI=0"
     "-DSALOME_BUILD_DOC=0"
-
 #    "-DMEDCOUPLING_USE_64BIT_IDS=0"
     "-DMEDCOUPLING_ROOT_DIR=${medcoupling}"
   ];
@@ -46,12 +40,9 @@ stdenv.mkDerivation rec {
 #  OMNIORB_ROOT_DIR = "${omniorb}";
 #  OMNIORBPY_ROOT_DIR = "${omniorbpy}";
 
-  src = fetchgit {
+  src = builtins.fetchGit {
     url = "http://git.salome-platform.org/gitpub/modules/med.git";
-    rev = "V${version}";
-    hash = "sha256-GkILRk3uUfgAGLYycnfM3L8EgEwce6baSiDibE5reEs=";
-#    rev = "V9_13";
-#    hash = "sha256-BnbxFmUIJCCRfVCa2X8tnLyz9suHjoIzlc8HtAbexiM=";
+    rev = "0db760d7198dd80338bc0feedcc654a2725ffff4"; # V9_11_0
   };
 
   nativeBuildInputs = [
@@ -64,10 +55,11 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     hdf5-mpi
+    mpi
     libtirpc
     cppunit
-    omniorb
-    omniorbpy
+    python311.pkgs.omniorb
+    python311.pkgs.omniorbpy
     medfile
   ];
 

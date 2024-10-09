@@ -5,7 +5,7 @@
      ## Requires 1.10.x version
      ##
 -    IF (NOT HDF_VERSION_MAJOR_REF EQUAL 1 OR NOT HDF_VERSION_MINOR_REF EQUAL 10 OR NOT HDF_VERSION_RELEASE_REF GREATER 1)
-+    IF (HDF5_VERSION VERSION_LESS 1.14.4.3)
++    IF (HDF5_VERSION VERSION_LESS 1.10.2)
          MESSAGE(FATAL_ERROR "HDF5 version is ${HDF_VERSION_REF}. Only versions >= 1.10.2 are supported.")
      ENDIF()
      ##
