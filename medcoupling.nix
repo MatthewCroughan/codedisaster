@@ -54,7 +54,7 @@ stdenv.mkDerivation {
     "-DMEDCOUPLING_PARTITIONER_PARMETIS=OFF"
 
     "-DLIBXML2_LIBRARY=${libxml2}"
-    "-DMEDCOUPLING_USE_64BIT_IDS=0"
+    "-DMEDCOUPLING_USE_64BIT_IDS=1"
     "-Wno-dev"
   ];
 
