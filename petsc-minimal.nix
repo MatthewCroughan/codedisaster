@@ -5,7 +5,7 @@
   cctools,
   gfortran,
   python311,
-  openblas,
+  blas,
   lapack,
   mpiSupport ? true,
   mpi, # generic mpi dependency
@@ -54,7 +54,7 @@ stdenv.mkDerivation rec {
     pkg-config
   ] ++ lib.optional mpiSupport mpi ++ lib.optional (mpiSupport && mpi.pname == "openmpi") openssh;
   buildInputs = [
-    openblas
+    blas
     lapack
   ] ++ lib.optional hdf5-support hdf5 ++ lib.optional withp4est p4est;
 

@@ -14,15 +14,7 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "scotch";
-  version = "7.0.5";
-
-  src = fetchFromGitLab {
-    domain = "gitlab.inria.fr";
-    owner = "scotch";
-    repo = "scotch";
-    rev = "v${finalAttrs.version}";
-    hash = "sha256-XXkVwTr8cbYfzXWWkPERTmjfE86JHUUuU6yxjp9k6II=";
-  };
+  version = "7.0.4";
 
   outputs = [
     "bin"
@@ -31,9 +23,18 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   cmakeFlags = [
+    "-DBUILD_SHARED_LIBS=ON"
     "-DINTSIZE=64"
     "-DINSTALL_METIS_HEADERS=OFF"
   ];
+
+  src = fetchFromGitLab {
+    domain = "gitlab.inria.fr";
+    owner = "scotch";
+    repo = "scotch";
+    rev = "v${finalAttrs.version}";
+    hash = "sha256-XXkVwTr8cbYfzXWWkPERTmjfE86JHUUuU6yxjp9k6II=";
+  };
 
   nativeBuildInputs = [
     cmake
@@ -60,4 +61,3 @@ stdenv.mkDerivation (finalAttrs: {
     maintainers = [ lib.maintainers.bzizou ];
   };
 })
-
