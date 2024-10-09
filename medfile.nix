@@ -18,6 +18,7 @@ stdenv.mkDerivation rec {
 
   cmakeFlags = [
     "-DMEDFILE_USE_MPI=ON"
+    "-DMED_MEDINT_TYPE=long long"
   ];
 
   checkPhase = "make test";
