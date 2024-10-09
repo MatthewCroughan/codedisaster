@@ -26,17 +26,15 @@ stdenv.mkDerivation {
   src = builtins.fetchGit {
     url = "http://git.salome-platform.org/gitpub/tools/medcoupling.git";
     rev = "1b5fb5650409b0ad3a61da3215496f2adf2dae02"; # V9_11_0
-    #rev = "28e485bde1c26dc835ec7acf449b1d519997ddce"; # V9_12_0
-    #rev = "8bea530c92cd907ae859ef11fd95b2db54b2894a"; # V9_13_0
   };
 
-  prePatch = ''
-    for i in $(grep -rl 'ParMETIS_')
-    do
-      substituteInPlace $i \
-        --replace-fail 'ParMETIS_' 'ParMETIS_V3_'
-    done
-  '';
+#  prePatch = ''
+#    for i in $(grep -rl 'ParMETIS_')
+#    do
+#      substituteInPlace $i \
+#        --replace-fail 'ParMETIS_' 'ParMETIS_V3_'
+#    done
+#  '';
 
 #  env.NIX_CFLAGS_COMPILE = "-std=c++11 -DMED_INT_IS_LONG";
 
@@ -56,7 +54,7 @@ stdenv.mkDerivation {
     "-DMEDCOUPLING_PARTITIONER_PARMETIS=OFF"
 
     "-DLIBXML2_LIBRARY=${libxml2}"
-    "-DMEDCOUPLING_USE_64BIT_IDS=1"
+    "-DMEDCOUPLING_USE_64BIT_IDS=0"
     "-Wno-dev"
   ];
 
