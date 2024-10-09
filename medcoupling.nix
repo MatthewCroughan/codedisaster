@@ -19,14 +19,15 @@
 }:
 stdenv.mkDerivation {
   pname = "medcoupling";
-  version = "9_13_0";
+  version = "9_11_0";
 
   CONFIGURATION_ROOT_DIR = salome-configuration;
 
   src = builtins.fetchGit {
     url = "http://git.salome-platform.org/gitpub/tools/medcoupling.git";
+    rev = "1b5fb5650409b0ad3a61da3215496f2adf2dae02"; # V9_11_0
     #rev = "28e485bde1c26dc835ec7acf449b1d519997ddce"; # V9_12_0
-    rev = "8bea530c92cd907ae859ef11fd95b2db54b2894a"; # V9_13_0
+    #rev = "8bea530c92cd907ae859ef11fd95b2db54b2894a"; # V9_13_0
   };
 
   prePatch = ''

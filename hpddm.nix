@@ -6,7 +6,7 @@
   mumps,
   suitesparse,
   arpack,
-  openblas,
+  blas,
   lapack,
   scalapack,
   mkl
@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
     mumps
     suitesparse
     arpack
-    openblas
+    blas
     lapack
     scalapack
 #    mkl

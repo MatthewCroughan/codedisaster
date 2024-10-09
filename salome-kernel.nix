@@ -2,6 +2,8 @@
 , stdenv
 , cppunit
 , mpi
+, omniorb
+, omniorbpy
 , pkg-config
 , fetchgit
 , cmake
@@ -17,15 +19,16 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "kernel";
-  version = "9_13_0";
+  version = "9_11_0";
 
   CONFIGURATION_ROOT_DIR = salome-configuration;
 
   src = fetchgit {
     url = "http://git.salome-platform.org/gitpub/modules/kernel.git";
     rev = "V${version}";
+    hash = "sha256-5tnVdovMhyDNRMX/OGhUu9cr7zC5ElUO+QQWaeUzeEA="; # V9_11_0
 #    hash = "sha256-VILB2i7CZ5XLPmnyEVFLyae0drkQwTNnB8AU1VYqlGg="; # V9_12_0
-    hash = "sha256-utGnUsxwxosu7zCwM5nGcpHO5sjDL4pU7aryxDoH+vU=";
+#    hash = "sha256-utGnUsxwxosu7zCwM5nGcpHO5sjDL4pU7aryxDoH+vU="; # V9_13_0
   };
 
   prePatch = ''
@@ -67,8 +70,8 @@ stdenv.mkDerivation rec {
     mpi
     boost
     hdf5
-    python311.pkgs.omniorb
-    python311.pkgs.omniorbpy
+    omniorb
+    omniorbpy
     libxml2
   ];
 
