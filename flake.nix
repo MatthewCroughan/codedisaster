@@ -3,14 +3,6 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs2405.url = "github:NixOS/nixpkgs/nixos-24.05";
-    mumps = {
-     # inputs.nixpkgs.follows = "nixpkgs";
-     # inputs.mumps-src = {
-     #   url = "tarball+https://mumps-solver.org/MUMPS_5.6.2.tar.gz";
-     #   flake = false;
-     # };
-      url = "github:mk3z/mumps";
-    };
     codeaster-src = {
       url = "gitlab:codeaster/src/17.1.9";
       flake = false;
@@ -49,7 +41,6 @@
                 '';
               };
               parmetis = self.callPackage ./parmetis.nix {};
-              tfel = self.callPackage ./tfel.nix {};
             })
           ];
           inherit system;
@@ -57,7 +48,6 @@
         packages = rec {
           default = pkgs.codeaster;
           medfile = pkgs.medfile;
-          tfel = pkgs.tfel;
           scotch = pkgs.scotch;
           metis = pkgs.metis;
           gklib = pkgs.gklib;
@@ -68,10 +58,11 @@
           hpddm = pkgs.hpddm;
           mumps = pkgs.mumps;
           medcoupling = pkgs.medcoupling;
-          test = pkgs.runCommand "" { buildInputs = [ default pkgs.openssh ]; } ''
+          test = pkgs.runCommand "codeaster-test" { buildInputs = [ default ]; } ''
             export HOME=$TMP
+            export LANG=C.UTF-8
+            export LC_ALL=C.UTF-8
             export PYTHONPATH=${medcoupling}/lib/python3.11/site-packages:${med}/lib/python3.11/site-packages
-            export LD_PRELOAD=${mpi}/lib/libmpi_cxx.so
             cp -r --no-preserve=mode ${./test} ./test
             cd test
            run_aster test.export || true

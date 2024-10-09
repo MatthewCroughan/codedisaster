@@ -1,4 +1,4 @@
-DEBUT(LANG='FR')
+DEBUT(LANG='EN')
 
 
 mesh = LIRE_MAILLAGE(identifier='0:1',
