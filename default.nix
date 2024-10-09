@@ -7,16 +7,13 @@
   zlib,
   openblas,
   lapack-ilp64,
-  scalapack,
-  lapack-reference,
-  lapack,
-
   hdf5-mpi,
-  scotch,
-
   mumps,
   med,
   medcoupling,
+  metis,
+  parmetis,
+  medfile
 }:
 let
   python3 = python311;
@@ -44,9 +41,9 @@ stdenv.mkDerivation {
     export CC=mpicc
   '';
   wafConfigureFlags = [
-    "--no-enable-all"
+#    "--no-enable-all"
+    "--disable-petsc"
     "--without-repo"
-    "--enable-mumps"
   ];
   src = codeaster-src;
   wafPath = "waf.engine";
@@ -55,12 +52,23 @@ stdenv.mkDerivation {
     mumps
 
     openblas
-    scalapack
+    lapack-ilp64
+
+    # Only needed when petsc is enabled
+#    scalapack
 
     zlib
     mpi
+
+    # Additional stuff that is only needed when compiling everything
+    metis
+    parmetis
+    medfile
+    hdf5-mpi
   ];
+
   nativeBuildInputs = [
     wafHook
   ];
+
 }
