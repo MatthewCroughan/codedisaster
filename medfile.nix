@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, cmake, hdf5 }:
+{ lib, stdenv, fetchurl, cmake, autoconf, hdf5, mpi, gfortran, python311, automake, m4, swig}:
 
 stdenv.mkDerivation rec {
   pname = "medfile";
@@ -11,19 +11,48 @@ stdenv.mkDerivation rec {
 
   patches = [
     ./hdf5-1.14.patch
+    ./patches/med-4.1.1-check-hdf5-parallel.diff
+    ./patches/med-4.1.1-check-hdf5-with-tabs.diff
   ];
 
-  nativeBuildInputs = [ cmake ];
-  buildInputs = [ hdf5 ];
+#  outputs = [ "out" "doc" "dev" ];
 
-  cmakeFlags = [
-    "-DMEDFILE_USE_MPI=ON"
-    "-DMED_MEDINT_TYPE=long long"
+  nativeBuildInputs = [ autoconf automake m4 gfortran python311 swig ];
+  buildInputs = [ hdf5 mpi ];
+
+#  enableParallelBuild = true;
+#
+  env.NIX_CFLAGS_COMPILE = "-DMEDFILE_HAVE_MPI=1";
+
+  preConfigure = ''
+    substituteInPlace configure --replace '"11100"' '22100'
+    export FFLAGS="-fdefault-integer-8 ''${FFLAGS}"
+    export FCFLAGS="-fdefault-integer-8 ''${FCFLAGS}"
+    export CC=mpicc CXX=mpicxx FC=mpif90 F77=mpif77
+  '';
+
+  configureFlags = [
+    "--with-swig=yes"
+    "--with-hdf5=${hdf5.bin}"
+    "--with-hdf5-lib=${hdf5.out}"
+    "--with-hdf5-include=${hdf5.dev}"
+    "--prefix=${builtins.placeholder "out"}"
   ];
 
-  checkPhase = "make test";
+#  prePatch = ''
+#            for i in $(grep -rl 'WITHPMED')
+#            do
+#              substituteInPlace $i \
+#                --replace 'if WITHPMED' 'if 1'
+#              cat $i
+#            done
+#  '';
 
-  postInstall = "rm -r $out/bin/testc";
+#  checkPhase = "make test";
+
+#  postFixup = "ln -s $out/lib/libmedC.so $out/lib/libmed.so";
+
+#  postInstall = "rm -r $out/bin/testc";
 
   meta = with lib; {
     description = "Library to read and write MED files";

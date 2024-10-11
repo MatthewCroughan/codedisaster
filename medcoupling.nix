@@ -40,21 +40,24 @@ stdenv.mkDerivation {
 
   cmakeFlags = [
     "-DSALOME_USE_MPI=ON"
+
     "-DMEDCOUPLING_USE_MPI=ON"
-    "-DCMAKE_Fortran_COMPILER=mpif77"
+    "-DCMAKE_Fortran_COMPILER=mpif90"
 
 #    "-DMEDCOUPLING_MICROMED=ON"
 #    "-DMEDCOUPLING_ENABLE_PYTHON=ON"
 
     "-DMEDCOUPLING_BUILD_DOC=OFF"
 
-    "-DMEDCOUPLING_ENABLE_PARTITIONER=OFF" # Need to make a choice of scotch or ptscotch
-    "-DMEDCOUPLING_PARTITIONER_SCOTCH=OFF"
-    "-DMEDCOUPLING_PARTITIONER_PTSCOTCH=OFF"
+    "-DMEDCOUPLING_ENABLE_PARTITIONER=ON" # Need to make a choice of scotch or ptscotch
     "-DMEDCOUPLING_PARTITIONER_PARMETIS=OFF"
+    "-DMEDCOUPLING_PARTITIONER_METIS=OFF"
+    "-DMEDCOUPLING_PARTITIONER_SCOTCH=OFF"
+    "-DMEDCOUPLING_PARTITIONER_PTSCOTCH=ON"
 
-    "-DLIBXML2_LIBRARY=${libxml2}"
-    "-DMEDCOUPLING_USE_64BIT_IDS=1"
+    "-DLIBXML2_INCLUDE_DIR=${libxml2.dev}/include/libxml2"
+    "-DLIBXML2_LIBRARY=${libxml2.out}/lib/libxml2${stdenv.hostPlatform.extensions.sharedLibrary}"
+    "-DMEDCOUPLING_USE_64BIT_IDS=ON"
     "-Wno-dev"
   ];
 
