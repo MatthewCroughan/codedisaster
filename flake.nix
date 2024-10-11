@@ -113,6 +113,16 @@
           addTmateBreakpoint = (builtins.getFlake "github:matthewcroughan/nixpkgs/mc/addTmateBreakpoint").legacyPackages.x86_64-linux.addTmateBreakpoint;
 
           test-debug = addTmateBreakpoint test;
+          test-as-a-folder = pkgs.runCommand "codeaster-test" { buildInputs = [ default pkgs.gdb pkgs.bashInteractive pkgs.strace pkgs.vim ]; } ''
+            export HOME=$TMP
+            export LANG=C.UTF-8
+            export LC_ALL=C.UTF-8
+            export PYTHONPATH=${medcoupling}/lib/python3.11/site-packages:${med}/lib/python3.11/site-packages
+            cp -r --no-preserve=mode ${./test} ./test
+            cd test
+            run_aster --no-mpi test.export || true
+            cp -r ../test $out
+          '';
           test = pkgs.runCommand "codeaster-test" { buildInputs = [ default pkgs.gdb pkgs.bashInteractive pkgs.strace pkgs.vim ]; } ''
             export HOME=$TMP
             export LANG=C.UTF-8
