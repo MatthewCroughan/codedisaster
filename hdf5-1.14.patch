@@ -31,7 +31,7 @@
  #endif
 --- a/src/hdfi/_MEDfileCreate.c
 +++ b/src/hdfi/_MEDfileCreate.c
-@@ -159,7 +159,7 @@ med_idt _MEDfileCreate(const char * const filename, const med_access_mode access
+@@ -149,7 +149,7 @@ med_idt _MEDfileCreate(const char * const filename, const med_access_mode access
     * En HDF5-1.10.0p1 cela n'a aucun effet ! 
     * Un test autoconf permet de fixer un intervalle de version HDF à MED.
     */

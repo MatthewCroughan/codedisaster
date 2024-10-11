@@ -25,7 +25,7 @@ stdenv.mkDerivation {
     "-DMED_ENABLE_PYTHON=ON"
     "-DSALOME_BUILD_GUI=0"
     "-DSALOME_BUILD_DOC=0"
-#    "-DMEDCOUPLING_USE_64BIT_IDS=0"
+    "-DMEDCOUPLING_USE_64BIT_IDS=1"
     "-DMEDCOUPLING_ROOT_DIR=${medcoupling}"
   ];
 

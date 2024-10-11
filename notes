@@ -1,0 +1,102 @@
+medfile in nixpkgs produces libmedC.so but not libmed.so, it's probably supposed
+to be symlinked such that `postFixup = "ln -s $out/lib/libmedC.so $out/lib/libmed.so";`
+
+
+When SCOTCH_Num is undefined, it's because we haven't passed
+"-DINSTALL_METIS_HEADERS=OFF" to the cmakeFlags, which causes metis.h to be
+produced which shadows the correct metis.h
+
+When an error like this is thrown, it means that scotch wasn't compiled with -DINTSIZE64:
+
+```
+code-aster> ../../bibcxx/ParallelUtilities/PtScotchPartitioner.cxx: In member function ‘int PtScotchPartitioner::buildGraph(const VectorLong&, const VectorLong&)’:
+code-aster> ../../bibcxx/ParallelUtilities/PtScotchPartitioner.cxx:46:46: error: cannot convert ‘long int*’ to ‘SCOTCH_Num*’ {aka ‘int*’}
+code-aster>    46 |                                _vertices.data(), 0, 0, 0, _edges.size(), _edges.size(),
+code-aster>       |                                ~~~~~~~~~~~~~~^~
+code-aster>       |                                              |
+code-aster>       |                                              long int*
+code-aster> In file included from ../../bibcxx/ParallelUtilities/PtScotchPartitioner.h:36,
+code-aster>                  from ../../bibcxx/ParallelUtilities/PtScotchPartitioner.cxx:20:
+code-aster> /nix/store/fllfq7zfyf2x7ra5v6i7q0grh38c1x0g-scotch-7.0.5-dev/include/ptscotch.h:147:127: note:   initializing argument 5 of ‘int SCOTCH_dgraphBuild(SCOTCH_Dgraph*, SCOTCH_Num, SCOTCH_Num, SCOTCH_Num, SCOTCH_Num*, SCOTCH_Num*, SCOTCH_Num*, SCOTCH_Num*, SCOTCH_Num, SCOTCH_Num, SCOTCH_Num*, SCOTCH_Num*, SCOTCH_Num*)’
+code-aster>   147 | int                         SCOTCH_dgraphBuild  (SCOTCH_Dgraph * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, const SCOTCH_Num, const SCOTCH_Num, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+code-aster>       |                                                                                                                               ^~~~~~~~~~~~~~~~~~
+code-aster> ../../bibcxx/ParallelUtilities/PtScotchPartitioner.cxx: In member function ‘int PtScotchPartitioner::buildGraph(const MeshConnectionGraphPtr&, const VectorOfVectorsLong&)’:
+code-aster> ../../bibcxx/ParallelUtilities/PtScotchPartitioner.cxx:58:94: error: cannot convert ‘long int*’ to ‘SCOTCH_Num*’ {aka ‘int*’}
+code-aster>    58 |             return SCOTCH_dgraphBuild( _graph, 0, vert.size() - 1, vert.size() - 1, vert.data(), 0,
+code-aster>       |                                                                                     ~~~~~~~~~^~
+code-aster>       |                                                                                              |
+code-aster>       |                                                                                              long int*
+code-aster> /nix/store/fllfq7zfyf2x7ra5v6i7q0grh38c1x0g-scotch-7.0.5-dev/include/ptscotch.h:147:127: note:   initializing argument 5 of ‘int SCOTCH_dgraphBuild(SCOTCH_Dgraph*, SCOTCH_Num, SCOTCH_Num, SCOTCH_Num, SCOTCH_Num*, SCOTCH_Num*, SCOTCH_Num*, SCOTCH_Num*, SCOTCH_Num, SCOTCH_Num, SCOTCH_Num*, SCOTCH_Num*, SCOTCH_Num*)’
+code-aster>   147 | int                         SCOTCH_dgraphBuild  (SCOTCH_Dgraph * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, const SCOTCH_Num, const SCOTCH_Num, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+code-aster>       |                                                                                                                               ^~~~~~~~~~~~~~~~~~
+code-aster> ../../bibcxx/ParallelUtilities/PtScotchPartitioner.cxx:62:94: error: cannot convert ‘long int*’ to ‘SCOTCH_Num*’ {aka ‘int*’}
+code-aster>    62 |             return SCOTCH_dgraphBuild( _graph, 0, vert.size() - 1, vert.size() - 1, vert.data(), 0,
+code-aster>       |                                                                                     ~~~~~~~~~^~
+code-aster>       |                                                                                              |
+code-aster>       |                                                                                              long int*
+code-aster> /nix/store/fllfq7zfyf2x7ra5v6i7q0grh38c1x0g-scotch-7.0.5-dev/include/ptscotch.h:147:127: note:   initializing argument 5 of ‘int SCOTCH_dgraphBuild(SCOTCH_Dgraph*, SCOTCH_Num, SCOTCH_Num, SCOTCH_Num, SCOTCH_Num*, SCOTCH_Num*, SCOTCH_Num*, SCOTCH_Num*, SCOTCH_Num, SCOTCH_Num, SCOTCH_Num*, SCOTCH_Num*, SCOTCH_Num*)’
+code-aster>   147 | int                         SCOTCH_dgraphBuild  (SCOTCH_Dgraph * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, const SCOTCH_Num, const SCOTCH_Num, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+code-aster>       |                                                                                                                               ^~~~~~~~~~~~~~~~~~
+code-aster> ../../bibcxx/ParallelUtilities/PtScotchPartitioner.cxx:195:53: error: cannot convert ‘long int*’ to ‘SCOTCH_Num*’ {aka ‘int*’}
+code-aster>   195 |                                    _newVertices.data(), 0, _weights.data(), 0, _newEdges.size(),
+code-aster>       |                                    ~~~~~~~~~~~~~~~~~^~
+code-aster>       |                                                     |
+code-aster>       |                                                     long int*
+code-aster> /nix/store/fllfq7zfyf2x7ra5v6i7q0grh38c1x0g-scotch-7.0.5-dev/include/ptscotch.h:147:127: note:   initializing argument 5 of ‘int SCOTCH_dgraphBuild(SCOTCH_Dgraph*, SCOTCH_Num, SCOTCH_Num, SCOTCH_Num, SCOTCH_Num*, SCOTCH_Num*, SCOTCH_Num*, SCOTCH_Num*, SCOTCH_Num, SCOTCH_Num, SCOTCH_Num*, SCOTCH_Num*, SCOTCH_Num*)’
+code-aster>   147 | int                         SCOTCH_dgraphBuild  (SCOTCH_Dgraph * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, const SCOTCH_Num, const SCOTCH_Num, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+code-aster>       |                                                                                                                               ^~~~~~~~~~~~~~~~~~
+code-aster> ../../bibcxx/ParallelUtilities/PtScotchPartitioner.cxx: In member function ‘VectorLong PtScotchPartitioner::partitionGraph(bool)’:
+code-aster> ../../bibcxx/ParallelUtilities/PtScotchPartitioner.cxx:213:86: error: cannot convert ‘long int*’ to ‘SCOTCH_Num*’ {aka ‘int*’}
+code-aster>   213 |         auto cret = SCOTCH_dgraphPart( _graph2, nbProcs, _scotchStrat, partition.data() );
+code-aster>       |                                                                        ~~~~~~~~~~~~~~^~
+code-aster>       |                                                                                      |
+code-aster>       |                                                                                      long int*
+code-aster> /nix/store/fllfq7zfyf2x7ra5v6i7q0grh38c1x0g-scotch-7.0.5-dev/include/ptscotch.h:171:114: note:   initializing argument 4 of ‘int SCOTCH_dgraphPart(SCOTCH_Dgraph*, SCOTCH_Num, SCOTCH_Strat*, SCOTCH_Num*)’
+code-aster>   171 | int                         SCOTCH_dgraphPart    (SCOTCH_Dgraph * const, const SCOTCH_Num, SCOTCH_Strat * const, SCOTCH_Num * const);
+code-aster>       |                                                                                                                  ^~~~~~~~~~~~~~~~~~
+code-aster> ../../bibcxx/ParallelUtilities/PtScotchPartitioner.cxx:219:85: error: cannot convert ‘long int*’ to ‘SCOTCH_Num*’ {aka ‘int*’}
+code-aster>   219 |         auto cret = SCOTCH_dgraphPart( _graph, nbProcs, _scotchStrat, partition.data() );
+code-aster>       |                                                                       ~~~~~~~~~~~~~~^~
+code-aster>       |                                                                                     |
+code-aster>       |                                                                                     long int*
+code-aster> /nix/store/fllfq7zfyf2x7ra5v6i7q0grh38c1x0g-scotch-7.0.5-dev/include/ptscotch.h:171:114: note:   initializing argument 4 of ‘int SCOTCH_dgraphPart(SCOTCH_Dgraph*, SCOTCH_Num, SCOTCH_Strat*, SCOTCH_Num*)’
+code-aster>   171 | int                         SCOTCH_dgraphPart    (SCOTCH_Dgraph * const, const SCOTCH_Num, SCOTCH_Strat * const, SCOTCH_Num * const);
+```
+
+When _mfacre is missing like this, it means that medfile was compiled without a
+fortran compiler present in the build process:
+
+```
+code-aster> stderr: Traceback (most recent call last):
+code-aster>   File "/build/source/build/release/catalo/fort.1", line 1, in <module>
+code-aster>     from code_aster.Commands import DEBUT, MAJ_CATA, FIN
+code-aster>   File "/nix/store/1fsx26wzd1qk6h31jpx8133dk3b9l8wk-code-aster/lib/aster/code_aster/Commands.py", line 29, in <module>
+code-aster>     from .Utilities.rc import rc
+code-aster>   File "/nix/store/1fsx26wzd1qk6h31jpx8133dk3b9l8wk-code-aster/lib/aster/code_aster/Utilities/__init__.py", line 59, in <module>
+code-aster>     from .ExecutionParameter import ExecutionParameter
+code-aster>   File "/nix/store/1fsx26wzd1qk6h31jpx8133dk3b9l8wk-code-aster/lib/aster/code_aster/Utilities/ExecutionParameter.py", line 50, in <module>
+code-aster>     import libaster
+code-aster> ImportError: /nix/store/1fsx26wzd1qk6h31jpx8133dk3b9l8wk-code-aster/lib/aster/libbibfor.so: undefined symbol: mfacre_
+```
+
+When you get an undefined reference to symbol 'MEDlibrarynumVersion', it's
+because -lmed was passed instead of -lmedC, one way to fix that is
+LDFLAGS="-lmedC", but this is imperfect and needs a better solution:
+
+```
+code-aster> [2/3] Linking build/.conf_check_50a52ad652e9597212f9d5d82c98d269/testbuild/release/testprog
+code-aster> ['mpicc', '-Wl,--export-dynamic', '-Wl,--no-keep-memory', 'test.c.1.o', '-o/build/source/build/.conf_check_50a52ad652e9597212f9d5d82c98d269/testbuild/release/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lmed', '-lhdf5', '-lz']
+code-aster> err: /nix/store/81xsp348yfgmaan9r5055mcdjfw7a8wc-binutils-2.42/bin/ld: test.c.1.o: undefined reference to symbol 'MEDlibraryNumVersion'
+code-aster> /nix/store/81xsp348yfgmaan9r5055mcdjfw7a8wc-binutils-2.42/bin/ld: /nix/store/awll1n6pn112yxd5b20c47il8y0lfgbi-medfile-5.0.0/lib/libmedC.so.11: error adding symbols: DSO missing from command line
+```
+
+When this petscsysdef.mod is missing it means that petscsysdef.mod was not found
+on the include path, solution is to set something like NIX_CFLAGS_COMPILE = "-I${mumps}/include -I${petsc}/include -I${petsc}/lib/petsc4py -I${petsc}/lib/petsc4py/include";
+
+```
+code-aster> /build/source/bibfor/petsc/aster_petsc_module.F90:23:9:
+code-aster>    23 |     use petscsysdef
+code-aster>       |         1
+code-aster> Fatal Error: Cannot open module file ‘petscsysdef.mod’ for reading at (1): No such file or directory
+code-aster> compilation terminated.
+```

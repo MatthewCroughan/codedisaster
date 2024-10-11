@@ -5,15 +5,23 @@
   python311,
   mpi,
   zlib,
+  tfel,
   openblas,
+  mgis,
   lapack-ilp64,
+  petsc,
+  blas,
+  scotch,
+  scalapack,
+  lapack,
   hdf5-mpi,
   mumps,
   med,
   medcoupling,
   metis,
   parmetis,
-  medfile
+  medfile,
+  addTmateBreakpoint ? (builtins.getFlake "github:matthewcroughan/nixpkgs/mc/addTmateBreakpoint").legacyPackages.x86_64-linux.addTmateBreakpoint
 }:
 let
   python3 = python311;
@@ -28,17 +36,28 @@ let
 in
 stdenv.mkDerivation {
   name = "code-aster";
+  #NIX_CFLAGS_COMPILE = "-I${mumps}/include -I${petsc}/include -I${petsc}/lib/petsc4py -I${petsc}/lib/petsc4py/include";
   NIX_CFLAGS_COMPILE = "-I${mumps}/include";
   preInstall = ''
     unset PYTHONPATH
   '';
   preConfigure = ''
-    #failHook() {
-    #  cat /build/source/build/config.log
-    #}
-    #failureHooks+=(failHook)
+    failHook() {
+      cat /build/source/build/config.log
+    }
+    failureHooks+=(failHook)
     export PYTHONPATH=${medcoupling}/lib/python3.11/site-packages:${med}/lib/python3.11/site-packages
+
     export CC=mpicc
+    export CXX=mpic++
+    export FC=mpif90
+    export LDFLAGS="-lmedC"
+    export TFELHOME="${tfel}"
+
+#    substituteInPlace waftools/med_cfg.py --replace-fail 'use="MED HDF5 Z"' 'use="HDF5 Z MEDC"'
+     substituteInPlace bibcxx/Solvers/LinearSolver.cxx --replace-fail \
+       'const std::string solverName( getName() + "           " );' \
+       'const std::string solverName( getName() + "           " ); printf(" HELLOHELLOHELLO ASTERINTEGER size--- %d %d  %d\n", sizeof(ASTERINTEGER), sizeof(int), sizeof(long));'
   '';
   wafConfigureFlags = [
 #    "--no-enable-all"
@@ -51,11 +70,17 @@ stdenv.mkDerivation {
     buildPython
     mumps
 
-    openblas
+#    petsc
+
+    blas
+    #openblas
+    mgis
     lapack-ilp64
 
     # Only needed when petsc is enabled
-#    scalapack
+    scalapack
+
+    scotch
 
     zlib
     mpi
