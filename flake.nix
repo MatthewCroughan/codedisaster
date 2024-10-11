@@ -120,9 +120,8 @@
             export PYTHONPATH=${medcoupling}/lib/python3.11/site-packages:${med}/lib/python3.11/site-packages
             cp -r --no-preserve=mode ${./test} ./test
             cd test
-           run_aster --no-mpi test.export || true
-           exit 1
-           ls -lah
+            run_aster --no-mpi test.export || true
+            cp OP.rmed $out
           '';
         };
       };
