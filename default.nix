@@ -1,6 +1,7 @@
 {
   codeaster-src,
   stdenv,
+  makeWrapper,
   waf,
   python311,
   mpi,
@@ -92,7 +93,13 @@ stdenv.mkDerivation {
     hdf5-mpi
   ];
 
+  postFixup = ''
+    wrapProgram $out/bin/run_aster --set PYTHONPATH "${medcoupling}/lib/python3.11/site-packages:${med}/lib/python3.11/site-packages"
+    wrapProgram $out/bin/run_ctest --set PYTHONPATH "${medcoupling}/lib/python3.11/site-packages:${med}/lib/python3.11/site-packages"
+  '';
+
   nativeBuildInputs = [
+    makeWrapper
     wafHook
   ];
 
