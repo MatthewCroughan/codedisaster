@@ -16,16 +16,18 @@
 , mpi
 , medfile
 , salome-configuration
+, fetchgit
 }:
-stdenv.mkDerivation {
+stdenv.mkDerivation rec {
   pname = "medcoupling";
-  version = "9_11_0";
+  version = "9_13_0";
 
   CONFIGURATION_ROOT_DIR = salome-configuration;
 
-  src = builtins.fetchGit {
-    url = "http://git.salome-platform.org/gitpub/tools/medcoupling.git";
-    rev = "1b5fb5650409b0ad3a61da3215496f2adf2dae02"; # V9_11_0
+  src = fetchgit {
+    url = "https://github.com/SalomePlatform/medcoupling.git";
+    rev = "V${version}";
+    hash = "sha256-rxSIWNuULItZ6k+UgP41F3naRH+N8hkGABhZwCQWM00=";
   };
 
 #  prePatch = ''

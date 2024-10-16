@@ -3,16 +3,16 @@
     "codeaster-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1727950566,
-        "narHash": "sha256-x/H3yuJO9Kp4NeySKQwIlZN3RqZdEOA7EastSYqnHdc=",
+        "lastModified": 1728416259,
+        "narHash": "sha256-vcfaYAkD8RR0LVFXJKYgZVWOAUnIFEnQjGb9vOp5dxs=",
         "owner": "codeaster",
         "repo": "src",
-        "rev": "54ddbe09d4dafeb035a5a628efd3fbd4f039679e",
+        "rev": "5c64d6bcdc6eb718f617739f1fb4ce870f239442",
         "type": "gitlab"
       },
       "original": {
         "owner": "codeaster",
-        "ref": "17.1.9",
+        "ref": "17.1.10",
         "repo": "src",
         "type": "gitlab"
       }
@@ -63,28 +63,11 @@
         "url": "https://github.com/NixOS/nixpkgs/archive/a5d394176e64ab29c852d03346c1fc9b0b7d33eb.tar.gz"
       }
     },
-    "nixpkgs2405": {
-      "locked": {
-        "lastModified": 1728328465,
-        "narHash": "sha256-a0a0M1TmXMK34y3M0cugsmpJ4FJPT/xsblhpiiX1CXo=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "1bfbbbe5bbf888d675397c66bfdb275d0b99361c",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-24.05",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "codeaster-src": "codeaster-src",
         "flake-parts": "flake-parts",
-        "nixpkgs": "nixpkgs",
-        "nixpkgs2405": "nixpkgs2405"
+        "nixpkgs": "nixpkgs"
       }
     }
   },

@@ -2,18 +2,17 @@
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs2405.url = "github:NixOS/nixpkgs/nixos-24.05";
     codeaster-src = {
-      url = "gitlab:codeaster/src/17.1.9";
+      url = "gitlab:codeaster/src/17.1.10";
       flake = false;
     };
   };
-
   outputs = inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = [
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux" # Aarch64 is blocked on VPU support
       ];
-      systems = [ "x86_64-linux" "aarch64-linux" ];
       perSystem = { config, self', inputs', pkgs, system, ... }: {
         _module.args.pkgs = import inputs.nixpkgs {
           config.allowUnfree = true;
@@ -41,17 +40,16 @@
                   "-DINSTALL_METIS_HEADERS=OFF"
                 ];
               });
-#              medfile = super.medfile.overrideAttrs (old: {
-#                cmakeFlags = (old.cmakeFlags or []) ++ [
-#                  "-DCMAKE_Fortran_COMPILER=mpif90"
-#                  "-DMEDFILE_USE_MPI=ON"
-#                  "-DMED_MEDINT_TYPE=long"
-#                  "-DMEDFILE_BUILD_STATIC_LIBS=OFF"
-#                  ''-DCMAKE_Fortran_FLAGS="-fdefault-integer-8"''
-#                ];
-#              });
-              medfile = self.callPackage ./medfile-5.nix {};
-              petsc = self.callPackage ./petsc-minimal.nix {};
+              medfile = super.medfile.overrideAttrs (old: {
+                cmakeFlags = (old.cmakeFlags or []) ++ [
+                  "-DCMAKE_Fortran_COMPILER=mpif90"
+                  "-DMEDFILE_USE_MPI=ON"
+                  "-DMED_MEDINT_TYPE=long"
+                  "-DMEDFILE_BUILD_STATIC_LIBS=OFF"
+                  ''-DCMAKE_Fortran_FLAGS="-fdefault-integer-8"''
+                ];
+              });
+              petsc = self.callPackage ./petsc.nix {};
               mumps = super.mumps.overrideAttrs (old: {
                 NIX_CFLAGS_COMPILE = "-g";
                 nativeBuildInputs = [ super.mpi ];
@@ -75,11 +73,8 @@
                   sed --debug -i 's/COMPLEX *::/COMPLEX(4) ::/g' include/*_{struc,root}.h libseq/mpif.h
                   sed --debug -i 's/LOGICAL *,/LOGICAL(4),/g' include/*_{struc,root}.h libseq/mpif.h
                   sed --debug -i 's/LOGICAL *::/LOGICAL(4) ::/g' include/*_{struc,root}.h libseq/mpif.h
-
                 '';
               });
-#              medfile = self.callPackage ./medfile-pmed.nix {};
-#              medfile = self.callPackage ./medfile-pmed.nix {};
               medcoupling = self.callPackage ./medcoupling.nix {};
               med = self.callPackage ./med.nix {};
               metis = super.metis.overrideAttrs {
@@ -88,41 +83,15 @@
                   substituteInPlace include/metis.h --replace-fail '#define IDXTYPEWIDTH 32' '#define IDXTYPEWIDTH 64'
                 '';
               };
-              parmetis = self.callPackage ./parmetis.nix {};
               mgis = self.callPackage ./mgis.nix {};
               tfel = self.callPackage ./tfel.nix {};
             })
           ];
           inherit system;
         };
+        legacyPackages = pkgs;
         packages = rec {
           default = pkgs.codeaster;
-          scalapack = pkgs.scalapack;
-          hdf5 = pkgs.hdf5;
-          medfile = pkgs.medfile;
-          scotch = pkgs.scotch;
-          metis = pkgs.metis;
-          gklib = pkgs.gklib;
-          parmetis = pkgs.parmetis;
-          mpi = pkgs.mpi;
-          med = pkgs.med;
-          petsc = pkgs.petsc;
-          hpddm = pkgs.hpddm;
-          mumps = pkgs.mumps;
-          medcoupling = pkgs.medcoupling;
-          addTmateBreakpoint = (builtins.getFlake "github:matthewcroughan/nixpkgs/mc/addTmateBreakpoint").legacyPackages.x86_64-linux.addTmateBreakpoint;
-
-          test-debug = addTmateBreakpoint test;
-          test-as-a-folder = pkgs.runCommand "codeaster-test" { buildInputs = [ default pkgs.gdb pkgs.bashInteractive pkgs.strace pkgs.vim ]; } ''
-            export HOME=$TMP
-            export LANG=C.UTF-8
-            export LC_ALL=C.UTF-8
-            export PYTHONPATH=${medcoupling}/lib/python3.11/site-packages:${med}/lib/python3.11/site-packages
-            cp -r --no-preserve=mode ${./test} ./test
-            cd test
-            run_aster --no-mpi test.export || true
-            cp -r ../test $out
-          '';
           test = pkgs.runCommand "codeaster-test" { buildInputs = [ default pkgs.gdb pkgs.bashInteractive pkgs.strace pkgs.vim ]; } ''
             export HOME=$TMP
             export LANG=C.UTF-8
@@ -130,11 +99,9 @@
             cp -r --no-preserve=mode ${./test} ./test
             cd test
             run_aster --no-mpi test.export || true
-            cp OP.rmed $out
+            cp -r ../test $out
           '';
         };
-      };
-      flake = {
       };
     };
 }

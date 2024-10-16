@@ -13,10 +13,11 @@
 , medfile
 , salome-kernel
 , salome-configuration
+, fetchgit
 }:
-stdenv.mkDerivation {
+stdenv.mkDerivation rec {
   pname = "med";
-  version = "9_11_0";
+  version = "9_13_0";
 
   cmakeFlags = [
     "-Wno-dev"
@@ -40,9 +41,10 @@ stdenv.mkDerivation {
 #  OMNIORB_ROOT_DIR = "${omniorb}";
 #  OMNIORBPY_ROOT_DIR = "${omniorbpy}";
 
-  src = builtins.fetchGit {
-    url = "http://git.salome-platform.org/gitpub/modules/med.git";
-    rev = "0db760d7198dd80338bc0feedcc654a2725ffff4"; # V9_11_0
+  src = fetchgit {
+    url = "https://github.com/SalomePlatform/med.git";
+    rev = "V${version}";
+    hash = "sha256-BnbxFmUIJCCRfVCa2X8tnLyz9suHjoIzlc8HtAbexiM=";
   };
 
   nativeBuildInputs = [

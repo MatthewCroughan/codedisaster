@@ -24,8 +24,6 @@
   petsc-scalar-type ? "real",
   petsc-precision ? "double",
   scalapack,
-#  hpddm,
-  fetchFromGitHub
 }:
 
 # This version of PETSc does not support a non-MPI p4est build
@@ -71,6 +69,8 @@ stdenv.mkDerivation rec {
   # These messages contaminate test output, which makes the quicktest suite to fail. The patch adds filtering for these messages.
   patches = [ ./filter_mpi_warnings.patch ];
 
+  env.CXXFLAGS = "-fpermissive";
+
   preConfigure = ''
     patchShebangs ./lib/petsc/bin
     configureFlagsArray=(
@@ -86,6 +86,12 @@ stdenv.mkDerivation rec {
             "--with-cxx=mpicxx"
             "--with-fc=mpif90"
             "--with-mpi=1"
+            "--download-hpddm=${
+              builtins.fetchurl {
+                url = "https://github.com/hpddm/hpddm/archive/refs/tags/v2.3.0.tar.gz";
+                sha256 = "1xpx5zyx9cz0bmrgpdysww9l54w5npwpw4qlqail4jh6pd8m4gfv";
+              }
+            }"
             "--with-metis=1"
             "--with-metis-dir=${metis}"
             "--with-parmetis=1"

@@ -7,14 +7,12 @@
   mpi,
   zlib,
   tfel,
-  openblas,
   mgis,
   lapack-ilp64,
   petsc,
   blas,
   scotch,
   scalapack,
-  lapack,
   hdf5-mpi,
   mumps,
   med,
@@ -22,9 +20,9 @@
   metis,
   parmetis,
   medfile,
-  addTmateBreakpoint ? (builtins.getFlake "github:matthewcroughan/nixpkgs/mc/addTmateBreakpoint").legacyPackages.x86_64-linux.addTmateBreakpoint
 }:
 let
+  pythonPath = "${medcoupling}/lib/python3.11/site-packages:${med}/lib/python3.11/site-packages:${petsc}/lib";
   python3 = python311;
   buildPython = (python3.withPackages (p: with p; [
     setuptools
@@ -35,10 +33,22 @@ let
   ]));
   wafHook = (waf.override { python3 = buildPython; }).hook;
 in
-stdenv.mkDerivation {
+stdenv.mkDerivation rec {
   name = "code-aster";
-  #NIX_CFLAGS_COMPILE = "-I${mumps}/include -I${petsc}/include -I${petsc}/lib/petsc4py -I${petsc}/lib/petsc4py/include";
-  NIX_CFLAGS_COMPILE = "-I${mumps}/include";
+  version = src.rev;
+  prePatch = ''
+    # Can't replace the 0.0.1 version number because Aster relies upon it in
+    # strange ways at runtime
+    # substituteInPlace code_aster/wscript \
+    #  --replace-fail 'VERSION_INFO=pformat(env["ASTER_VERSION"])' 'VERSION_INFO=pformat(env["${src.rev}-nix"])'
+
+    # Can replace the "aesthetic" version with one that reports the git revision
+    # of the aster sources
+    substituteInPlace code_aster/Utilities/version.py \
+      --replace-fail 'get_version() if version_info else ""' '"${src.rev}-nix"' \
+      --replace-fail 'name = get_version_name()' 'name = "${src.rev}-nix"'
+  '';
+  NIX_CFLAGS_COMPILE = "-I${mumps}/include -I${petsc}/include -I${petsc}/lib/petsc4py -I${petsc}/lib/petsc4py/include";
   preInstall = ''
     unset PYTHONPATH
   '';
@@ -47,22 +57,14 @@ stdenv.mkDerivation {
       cat /build/source/build/config.log
     }
     failureHooks+=(failHook)
-    export PYTHONPATH=${medcoupling}/lib/python3.11/site-packages:${med}/lib/python3.11/site-packages
-
+    export PYTHONPATH="${pythonPath}"
     export CC=mpicc
     export CXX=mpic++
     export FC=mpif90
     export LDFLAGS="-lmedC"
     export TFELHOME="${tfel}"
-
-#    substituteInPlace waftools/med_cfg.py --replace-fail 'use="MED HDF5 Z"' 'use="HDF5 Z MEDC"'
-     substituteInPlace bibcxx/Solvers/LinearSolver.cxx --replace-fail \
-       'const std::string solverName( getName() + "           " );' \
-       'const std::string solverName( getName() + "           " ); printf(" HELLOHELLOHELLO ASTERINTEGER size--- %d %d  %d\n", sizeof(ASTERINTEGER), sizeof(int), sizeof(long));'
   '';
   wafConfigureFlags = [
-#    "--no-enable-all"
-    "--disable-petsc"
     "--without-repo"
   ];
   src = codeaster-src;
@@ -70,23 +72,14 @@ stdenv.mkDerivation {
   buildInputs = [
     buildPython
     mumps
-
-#    petsc
-
+    petsc
     blas
-    #openblas
     mgis
     lapack-ilp64
-
-    # Only needed when petsc is enabled
     scalapack
-
     scotch
-
     zlib
     mpi
-
-    # Additional stuff that is only needed when compiling everything
     metis
     parmetis
     medfile
@@ -94,13 +87,12 @@ stdenv.mkDerivation {
   ];
 
   postFixup = ''
-    wrapProgram $out/bin/run_aster --set PYTHONPATH "${medcoupling}/lib/python3.11/site-packages:${med}/lib/python3.11/site-packages"
-    wrapProgram $out/bin/run_ctest --set PYTHONPATH "${medcoupling}/lib/python3.11/site-packages:${med}/lib/python3.11/site-packages"
+    wrapProgram $out/bin/run_aster --set PYTHONPATH ${pythonPath}
+    wrapProgram $out/bin/run_ctest --set PYTHONPATH ${pythonPath}
   '';
 
   nativeBuildInputs = [
     makeWrapper
     wafHook
   ];
-
 }
