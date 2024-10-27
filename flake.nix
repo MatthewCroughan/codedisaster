@@ -1,7 +1,8 @@
 {
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    #nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:qbisi/nixpkgs/mumps_par";
     codeaster-src = {
       url = "gitlab:codeaster/src/17.1.10";
       flake = false;
@@ -50,19 +51,8 @@
                 ];
               });
               petsc = self.callPackage ./petsc.nix {};
-              mumps = super.mumps.overrideAttrs (old: {
+              mumps = super.mumps_par.overrideAttrs (old: {
                 NIX_CFLAGS_COMPILE = "-g";
-                nativeBuildInputs = [ super.mpi ];
-                buildInputs = with self; [
-                  blas
-                  scalapack
-                  metis
-                  scotch
-                  lapack
-                ];
-                configurePhase = ''
-                  cp Make.inc/Makefile.debian.PAR ./Makefile.inc
-                '';
                 prePatch = ''
                   sed --debug -i 's/INTEGER *,/INTEGER(4),/g' include/*_{struc,root}.h
                   sed --debug -i 's/INTEGER *::/INTEGER(4) ::/g' include/*_{struc,root}.h
