@@ -3,16 +3,16 @@
     "codeaster-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1728416259,
-        "narHash": "sha256-vcfaYAkD8RR0LVFXJKYgZVWOAUnIFEnQjGb9vOp5dxs=",
+        "lastModified": 1729769462,
+        "narHash": "sha256-tWM3Y0nRjGc7tJUWt0jfpNrqZAzKmaOfuNsdAPHvp8U=",
         "owner": "codeaster",
         "repo": "src",
-        "rev": "5c64d6bcdc6eb718f617739f1fb4ce870f239442",
+        "rev": "382fbc202a97846fc9e39ccb86058d5ec905c4bb",
         "type": "gitlab"
       },
       "original": {
         "owner": "codeaster",
-        "ref": "17.1.10",
+        "ref": "17.1.12",
         "repo": "src",
         "type": "gitlab"
       }
