@@ -1,8 +1,7 @@
 {
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
-    #nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:qbisi/nixpkgs/mumps_par";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     codeaster-src = {
       url = "gitlab:codeaster/src/17.1.10";
       flake = false;
