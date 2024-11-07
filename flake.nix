@@ -19,7 +19,10 @@
           overlays = [
             (self: super: {
               codeaster = self.callPackage ./default.nix { codeaster-src = inputs.codeaster-src; };
+              salome-bootstrap = self.callPackage ./salome-bootstrap.nix {};
               salome-configuration = import ./salome-configuration.nix;
+              salome-paravis = self.callPackage ./salome-paravis.nix {};
+              salome-gui = self.callPackage ./salome-gui.nix {};
               salome-kernel = self.callPackage ./salome-kernel.nix {};
               scalapack = (super.scalapack.override {
                 lapack = self.lapack-ilp64;
@@ -81,6 +84,11 @@
         legacyPackages = pkgs;
         packages = rec {
           default = pkgs.codeaster;
+          paraview-test = pkgs.runCommand "codeaster-paraview-test" {
+            nativeBuildInputs = with pkgs; [
+              paraview
+            ];
+          };
           test = pkgs.runCommand "codeaster-test" { buildInputs = [ default pkgs.gdb pkgs.bashInteractive pkgs.strace pkgs.vim ]; } ''
             export HOME=$TMP
             export LANG=C.UTF-8
