@@ -2,6 +2,7 @@
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs2405.url = "github:NixOS/nixpkgs/nixos-24.05";
     codeaster-src = {
       url = "gitlab:codeaster/src/17.1.12";
       flake = false;
@@ -19,10 +20,15 @@
           overlays = [
             (self: super: {
               codeaster = self.callPackage ./default.nix { codeaster-src = inputs.codeaster-src; };
+              vtk = super.vtk.overrideAttrs (old: {
+                cmakeFlags = old.cmakeFlags ++ [
+                  "VTK_MODULE_ENABLE_VTK_RenderingLOD=YES"
+                ];
+              });
               salome-bootstrap = self.callPackage ./salome-bootstrap.nix {};
               salome-configuration = import ./salome-configuration.nix;
               salome-paravis = self.callPackage ./salome-paravis.nix {};
-              salome-gui = self.callPackage ./salome-gui.nix {};
+              salome-gui = self.callPackage ./salome-gui.nix { paraview = inputs.nixpkgs2405.legacyPackages.${super.hostPlatform.system}.paraview; };
               salome-kernel = self.callPackage ./salome-kernel.nix {};
               scalapack = (super.scalapack.override {
                 lapack = self.lapack-ilp64;
@@ -32,11 +38,11 @@
                   ln -s $out/lib/libscalapack.so $out/lib/libscalapack-openmpi.so
                 '';
               };
-              hdf5 = super.hdf5.override {
-                usev110Api = true;
-                mpiSupport = true;
-                cppSupport = false;
-              };
+#              hdf5 = super.hdf5.override {
+#                usev110Api = true;
+#                mpiSupport = true;
+#                cppSupport = false;
+#              };
               scotch = super.scotch.overrideAttrs (old: {
                 cmakeFlags = (old.cmakeFlags or []) ++ [
                   "-DINTSIZE=64"
