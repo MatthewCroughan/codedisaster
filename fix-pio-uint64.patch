@@ -1,0 +1,7 @@
+diff --git a/IO/PIO/PIOData.h b/IO/PIO/PIOData.h
+index abc123..def456 100644
+--- a/IO/PIO/PIOData.h
++++ b/IO/PIO/PIOData.h
+@@ -12,6 +12,7 @@
+#include <valarray>
++ #include <cstdint>

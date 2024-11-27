@@ -63,6 +63,22 @@
         "url": "https://github.com/NixOS/nixpkgs/archive/cc2f28000298e1269cea6612cd06ec9979dd5d7f.tar.gz"
       }
     },
+    "nixpkgs-matt": {
+      "locked": {
+        "lastModified": 1731188137,
+        "narHash": "sha256-D5RqmHLtSF0gNEwybe+p3R2T/uG/uv+BSeU3YCiK4lg=",
+        "owner": "matthewcroughan",
+        "repo": "nixpkgs",
+        "rev": "2111401cb692420dfa43b0b45906659b4e39c449",
+        "type": "github"
+      },
+      "original": {
+        "owner": "matthewcroughan",
+        "ref": "mc/update-vtk",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs2405": {
       "locked": {
         "lastModified": 1730883749,
@@ -84,6 +100,7 @@
         "codeaster-src": "codeaster-src",
         "flake-parts": "flake-parts",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-matt": "nixpkgs-matt",
         "nixpkgs2405": "nixpkgs2405"
       }
     }

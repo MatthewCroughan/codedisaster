@@ -17,8 +17,7 @@
   vtk,
   boost,
   graphviz,
-  mpi,
-  hdf5,
+  hdf5-mpi,
   paraview,
   toybox,
   runCommand,
@@ -46,8 +45,11 @@ stdenv.mkDerivation rec {
 
   cmakeFlags = [
     "-DSALOME_CMAKE_DEBUG=ON"
-    "-DSALOME_USE_VTKVIEWER=OFF"
+    "-Wno-dev"
+#    "-DSALOME_USE_VTKVIEWER=OFF"
     "-DSALOME_BUILD_DOC=OFF"
+    "-DVTK_DIR=${vtk.out}/lib/cmake/vtk"
+    "-DVTK_ROOT_DIR=${vtk.out}/lib/cmake/vtk"
     "-DPYQT_SIPS_DIR=${patched-pyqt5}/${python311.pkgs.python.sitePackages}/PyQt5/bindings"
     "-DPYQT5_SIP_DIR=${patched-pyqt5}/${python311.pkgs.python.sitePackages}/PyQt5/bindings"
     "-DPYQT_SIP_DIR_OVERRIDE=${patched-pyqt5}/${python311.pkgs.python.sitePackages}/PyQt5/bindings"
@@ -69,10 +71,11 @@ stdenv.mkDerivation rec {
     hash = "sha256-+w1z5R18G4Mv4rEcVd5+htDEjwqnTx0TAZ3jFsmanBQ=";
   };
 
-  NIX_CFLAGS_COMPILE = "-I${paraview.out}/include/paraview-5.11 -I${vtk.out}/include/vtk -Wno-error=format-security -L${vtk.out}/lib -lvtkRenderingLOD";
+  NIX_CFLAGS_COMPILE = "-Wno-error=format-security";
+  #NIX_CFLAGS_COMPILE = "-I${paraview.out}/include/paraview-5.11 -Wno-error=format-security -L${vtk.out}/lib";
 
   buildInputs = [
-    hdf5
+    hdf5-mpi
     cppunit
     opencascade-occt
     libGLU
@@ -90,7 +93,6 @@ stdenv.mkDerivation rec {
     vtk
     graphviz
     boost
-    mpi
     tbb
     paraview
 #    libsForQt5.qwt
